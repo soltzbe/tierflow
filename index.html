@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A focused, ad-free tier list ranking interface.">
+  <title>TierFlow</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <div class="brand">TierFlow</div>
+        <div class="tagline">Focused tier ranking</div>
+      </div>
+
+      <form class="import-form" id="importForm">
+        <label class="sr-only" for="url">TierMaker template URL</label>
+        <input id="url" autocomplete="url" inputmode="url" placeholder="Paste tiermaker.com/create/... link" required>
+        <button class="btn primary" type="submit">Import</button>
+      </form>
+    </header>
+
+    <p id="status" class="status" role="status" aria-live="polite">
+      Paste a public TierMaker template link to begin.
+    </p>
+
+    <section class="workspace" id="workspace" hidden>
+      <div class="heading">
+        <div class="heading-copy">
+          <h1 id="title">Imported Tier List</h1>
+          <a id="source" class="source" target="_blank" rel="noopener noreferrer"></a>
+        </div>
+        <div class="progress" id="progress">0 / 0 ranked</div>
+      </div>
+
+      <div class="live-layout">
+        <section class="current-card" aria-labelledby="currentHeading">
+          <div class="imagebox">
+            <img id="currentImg" alt="Current item">
+          </div>
+          <div class="item-meta">
+            <strong id="currentHeading">Current item</strong>
+            <span id="itemIndex" class="muted"></span>
+          </div>
+          <div class="controls">
+            <button class="btn" id="undo" type="button">Undo</button>
+            <button class="btn" id="skip" type="button">Skip</button>
+            <button class="btn" id="shuffle" type="button">Shuffle remaining</button>
+            <button class="btn" id="editTiers" type="button">Edit tiers</button>
+          </div>
+        </section>
+
+        <section class="tier-panel" aria-label="Choose a tier">
+          <div class="tier-grid" id="tierButtons"></div>
+          <p class="help">
+            Click a tier or use <kbd>1</kbd>–<kbd>9</kbd>. <kbd>Z</kbd> undo, <kbd>S</kbd> skip.
+          </p>
+        </section>
+      </div>
+
+      <section class="board-wrap" aria-label="Completed tier list">
+        <div class="board" id="board"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="tierDialog" class="dialog">
+    <form method="dialog" class="dialog-card" id="tierEditorForm">
+      <div class="dialog-heading">
+        <h2>Edit tiers</h2>
+        <button class="icon-btn" value="cancel" aria-label="Close">×</button>
+      </div>
+      <div id="tierEditor"></div>
+      <div class="controls dialog-actions">
+        <button class="btn" id="addTier" type="button">+ Add tier</button>
+        <button class="btn primary" id="saveTiers" type="button">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
