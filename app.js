@@ -8,7 +8,15 @@
 
   function setStatus(text, isError=false){ const el=$('#status'); el.textContent=text; el.className=`status${isError?' error':''}`; }
   function normalizeInputUrl(value){ let raw=String(value||'').trim().replace(/^<|>$/g,'').trim(); if(!raw)return null; if(!/^https?:\/\//i.test(raw))raw=`https://${raw}`; try{const url=new URL(raw);if(!/(^|\.)tiermaker\.com$/i.test(url.hostname))return null;if(!/^\/create\//i.test(url.pathname))return null;url.protocol='https:';url.hash='';return url.href}catch{return null} }
-  function apiEndpoint(){ const base=String(window.TIERFLOW_CONFIG?.API_BASE||'').trim().replace(/\/$/,''); return base?`${base}/api/import`:null; }
+  const FALLBACK_API_BASE = 'https://tierflow-importer.marcusoltzberg-4a1.workers.dev';
+
+  function apiEndpoint(){
+    const configured = window.TIERFLOW_CONFIG && typeof window.TIERFLOW_CONFIG.API_BASE === 'string'
+      ? window.TIERFLOW_CONFIG.API_BASE
+      : '';
+    const base = String(configured || FALLBACK_API_BASE).trim().replace(/\/$/, '');
+    return base ? `${base}/api/import` : null;
+  }
   function basename(url){ try{const part=new URL(url).pathname.split('/').pop()||'item';return decodeURIComponent(part).replace(/[-_]+/g,' ').replace(/\.[^.]+$/,'').slice(0,70)}catch{return 'item'} }
   function sanitizeImages(images){ return [...new Set((images||[]).filter(Boolean))].map((src,i)=>({id:`i${i}`,src,name:basename(src)})); }
 
