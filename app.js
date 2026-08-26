@@ -8,7 +8,25 @@
   let selectedRankedId = null;
 
   function setStatus(text, isError=false){ const el=$('#status'); el.textContent=text; el.className=`status${isError?' error':''}`; }
-  function normalizeInputUrl(value){ let raw=String(value||'').trim().replace(/^<|>$/g,'').trim(); if(!raw)return null; if(!/^https?:\/\//i.test(raw))raw=`https://${raw}`; try{const url=new URL(raw);if(!/(^|\.)tiermaker\.com$/i.test(url.hostname))return null;if(!/^\/create\//i.test(url.pathname))return null;url.protocol='https:';url.hash='';return url.href}catch{return null} }
+  function normalizeInputUrl(value){
+    let raw=String(value||'').trim().replace(/^<|>$/g,'').trim();
+    if(!raw)return null;
+    if(!/^https?:\/\//i.test(raw))raw=`https://${raw}`;
+    try{
+      const url=new URL(raw);
+      const host=url.hostname.toLowerCase();
+
+      const isTemplate=(host==='tiermaker.com'||host==='www.tiermaker.com')&&/^\/create\/[^/]+/i.test(url.pathname);
+      const isLive=host==='live.tiermaker.com'&&/^\/[^/]+\/?$/i.test(url.pathname)&&url.pathname!=='/';
+
+      if(!isTemplate&&!isLive)return null;
+      url.protocol='https:';
+      url.hash='';
+      return url.href;
+    }catch{
+      return null;
+    }
+  }
   const IMPORT_ENDPOINT = 'https://tierflow-importer.marcusoltzberg-4a1.workers.dev/api/import';
   function basename(url){ try{const part=new URL(url).pathname.split('/').pop()||'item';return decodeURIComponent(part).replace(/[-_]+/g,' ').replace(/\.[^.]+$/,'').slice(0,70)}catch{return 'item'} }
   function sanitizeImages(images){ return [...new Set((images||[]).filter(Boolean))].map((src,i)=>({id:`i${i}`,src,name:basename(src)})); }
@@ -144,7 +162,7 @@ function render(){
   function shuffleRemaining(){ for(let i=state.remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.remaining[i],state.remaining[j]]=[state.remaining[j],state.remaining[i]]} render(); }
 
   async function importTemplate(event){
-    event.preventDefault(); const tierMakerUrl=normalizeInputUrl($('#url').value); if(!tierMakerUrl){setStatus('Paste a public tiermaker.com/create/... template URL.',true);return}
+    event.preventDefault(); const tierMakerUrl=normalizeInputUrl($('#url').value); if(!tierMakerUrl){setStatus('Paste a TierMaker template link or a live.tiermaker.com event link.',true);return}
     setStatus('Importing template…');
     try{const response=await fetch(IMPORT_ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:tierMakerUrl})});let data;try{data=await response.json()}catch{throw new Error(`Importer returned HTTP ${response.status} instead of JSON.`)}if(!response.ok)throw new Error(data.error||'Import failed.');state.title=data.title||'Imported Tier List';state.source=data.source||tierMakerUrl;state.tiers=(data.labels?.length?data.labels:['S','A','B','C','D','F']).slice(0,12).map((name,i)=>({name,color:palette[i%palette.length]}));state.remaining=sanitizeImages(data.images);state.ranked=[];state.history=[];selectedRankedId=null;if(!state.remaining.length)throw new Error('The importer did not return any candidate images.');setStatus(`Imported ${state.remaining.length} images. Rank one item at a time.`);render()}catch(error){setStatus(error?.message||String(error),true)}
   }
