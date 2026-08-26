@@ -10,9 +10,12 @@
 <body>
   <main class="shell">
     <header class="topbar">
-      <div>
-        <div class="brand">TierFlow</div>
-        <div class="tagline">Focused tier ranking</div>
+      <div class="brand-wrap">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <div class="brand">TIER<span>FLOW</span></div>
       </div>
 
       <form class="import-form" id="importForm">
@@ -32,36 +35,53 @@
           <h1 id="title">Imported Tier List</h1>
           <a id="source" class="source" target="_blank" rel="noopener noreferrer"></a>
         </div>
-        <div class="progress" id="progress">0 / 0 ranked</div>
+        <div class="heading-actions">
+          <button class="btn subtle" id="undo" type="button">Undo</button>
+          <button class="btn subtle" id="shuffle" type="button">Shuffle</button>
+          <button class="btn subtle" id="editTiers" type="button">Edit tiers</button>
+        </div>
       </div>
 
       <div class="live-layout">
-        <section class="current-card" aria-labelledby="currentHeading">
-          <div class="imagebox">
-            <img id="currentImg" alt="Current item">
-          </div>
-          <div class="item-meta">
-            <strong id="currentHeading">Current item</strong>
-            <span id="itemIndex" class="muted"></span>
-          </div>
-          <div class="controls">
-            <button class="btn" id="undo" type="button">Undo</button>
-            <button class="btn" id="skip" type="button">Skip</button>
-            <button class="btn" id="shuffle" type="button">Shuffle remaining</button>
-            <button class="btn" id="editTiers" type="button">Edit tiers</button>
-          </div>
+        <section class="board-wrap" aria-label="Tier list">
+          <div class="board" id="board"></div>
         </section>
 
-        <section class="tier-panel" aria-label="Choose a tier">
-          <div class="tier-grid" id="tierButtons"></div>
-          <p class="help">
-            Click a tier or use <kbd>1</kbd>–<kbd>9</kbd>. <kbd>Z</kbd> undo, <kbd>S</kbd> skip.
-          </p>
-        </section>
+        <aside class="vote-panel" aria-labelledby="voteHeading">
+          <div class="vote-panel-inner">
+            <h2 id="voteHeading">SUBMIT VOTE</h2>
+
+            <div class="imagebox">
+              <img id="currentImg" alt="Current item">
+            </div>
+
+            <div class="item-meta">
+              <strong id="currentHeading">Current item</strong>
+              <span id="itemIndex" class="muted"></span>
+            </div>
+
+            <div class="tier-grid" id="tierButtons" aria-label="Choose a tier"></div>
+            <button class="skip-btn" id="skip" type="button">SKIP</button>
+
+            <div class="progress-block">
+              <div class="progress-line">
+                <span>Progress</span>
+                <span id="progress">0 / 0</span>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+            </div>
+
+            <p class="help">
+              Keys <kbd>1</kbd>–<kbd>9</kbd> rank · <kbd>Z</kbd> undo · <kbd>S</kbd> skip
+            </p>
+          </div>
+        </aside>
       </div>
 
-      <section class="board-wrap" aria-label="Completed tier list">
-        <div class="board" id="board"></div>
+      <section class="queue-wrap" aria-label="Remaining items">
+        <div class="queue" id="queue"></div>
       </section>
     </section>
   </main>
