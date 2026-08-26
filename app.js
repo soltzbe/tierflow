@@ -8,15 +8,7 @@
 
   function setStatus(text, isError=false){ const el=$('#status'); el.textContent=text; el.className=`status${isError?' error':''}`; }
   function normalizeInputUrl(value){ let raw=String(value||'').trim().replace(/^<|>$/g,'').trim(); if(!raw)return null; if(!/^https?:\/\//i.test(raw))raw=`https://${raw}`; try{const url=new URL(raw);if(!/(^|\.)tiermaker\.com$/i.test(url.hostname))return null;if(!/^\/create\//i.test(url.pathname))return null;url.protocol='https:';url.hash='';return url.href}catch{return null} }
-  const FALLBACK_API_BASE = 'https://tierflow-importer.marcusoltzberg-4a1.workers.dev';
-
-  function apiEndpoint(){
-    const configured = window.TIERFLOW_CONFIG && typeof window.TIERFLOW_CONFIG.API_BASE === 'string'
-      ? window.TIERFLOW_CONFIG.API_BASE
-      : '';
-    const base = String(configured || FALLBACK_API_BASE).trim().replace(/\/$/, '');
-    return base ? `${base}/api/import` : null;
-  }
+  const IMPORT_ENDPOINT = 'https://tierflow-importer.marcusoltzberg-4a1.workers.dev/api/import';
   function basename(url){ try{const part=new URL(url).pathname.split('/').pop()||'item';return decodeURIComponent(part).replace(/[-_]+/g,' ').replace(/\.[^.]+$/,'').slice(0,70)}catch{return 'item'} }
   function sanitizeImages(images){ return [...new Set((images||[]).filter(Boolean))].map((src,i)=>({id:`i${i}`,src,name:basename(src)})); }
 
@@ -90,9 +82,8 @@
 
   async function importTemplate(event){
     event.preventDefault(); const tierMakerUrl=normalizeInputUrl($('#url').value); if(!tierMakerUrl){setStatus('Paste a public tiermaker.com/create/... template URL.',true);return}
-    const endpoint=apiEndpoint(); if(!endpoint){setStatus('Set API_BASE in config.js to your deployed importer URL before publishing on GitHub Pages.',true);return}
     setStatus('Importing template…');
-    try{const response=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:tierMakerUrl})});let data;try{data=await response.json()}catch{throw new Error(`Importer returned HTTP ${response.status} instead of JSON.`)}if(!response.ok)throw new Error(data.error||'Import failed.');state.title=data.title||'Imported Tier List';state.source=data.source||tierMakerUrl;state.tiers=(data.labels?.length?data.labels:['S','A','B','C','D','F']).slice(0,12).map((name,i)=>({name,color:palette[i%palette.length]}));state.remaining=sanitizeImages(data.images);state.ranked=[];state.history=[];if(!state.remaining.length)throw new Error('The importer did not return any candidate images.');setStatus(`Imported ${state.remaining.length} images. Rank one item at a time.`);render()}catch(error){setStatus(error?.message||String(error),true)}
+    try{const response=await fetch(IMPORT_ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:tierMakerUrl})});let data;try{data=await response.json()}catch{throw new Error(`Importer returned HTTP ${response.status} instead of JSON.`)}if(!response.ok)throw new Error(data.error||'Import failed.');state.title=data.title||'Imported Tier List';state.source=data.source||tierMakerUrl;state.tiers=(data.labels?.length?data.labels:['S','A','B','C','D','F']).slice(0,12).map((name,i)=>({name,color:palette[i%palette.length]}));state.remaining=sanitizeImages(data.images);state.ranked=[];state.history=[];if(!state.remaining.length)throw new Error('The importer did not return any candidate images.');setStatus(`Imported ${state.remaining.length} images. Rank one item at a time.`);render()}catch(error){setStatus(error?.message||String(error),true)}
   }
 
   function openTierEditor(){ const editor=$('#tierEditor');editor.replaceChildren();state.tiers.forEach((tier,i)=>{const row=document.createElement('div');row.className='editor-row';const color=document.createElement('input');color.type='color';color.value=/^#[0-9a-f]{6}$/i.test(tier.color)?tier.color:'#cccccc';color.dataset.index=String(i);color.dataset.role='color';const name=document.createElement('input');name.type='text';name.value=tier.name;name.dataset.index=String(i);name.dataset.role='name';const remove=document.createElement('button');remove.type='button';remove.className='btn danger delete-tier';remove.textContent='Delete';remove.disabled=state.tiers.length<=2;remove.addEventListener('click',()=>deleteTier(i));row.append(color,name,remove);editor.append(row)});$('#tierDialog').showModal() }
