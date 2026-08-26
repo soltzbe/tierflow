@@ -37,6 +37,21 @@
   button.title = text;
 }
 
+function fitBoardLabel(label){
+  if(!label) return;
+  let size = 21;
+  label.style.fontSize = size + 'px';
+
+  // Shrink until the renamed tier fits inside the fixed-height label.
+  while (
+    size > 10 &&
+    (label.scrollHeight > label.clientHeight || label.scrollWidth > label.clientWidth)
+  ){
+    size -= 1;
+    label.style.fontSize = size + 'px';
+  }
+}
+
 function render(){
     const done=state.ranked.length, total=done+state.remaining.length;
     const selectedEntry=selectedRankedId?state.ranked.find(entry=>entry.item.id===selectedRankedId):null;
@@ -48,7 +63,7 @@ function render(){
     $('#undo').disabled=state.history.length===0; $('#skip').disabled=selectedEntry?false:state.remaining.length<2; $('#shuffle').disabled=state.remaining.length<2;
 
     const tierButtons=$('#tierButtons'); tierButtons.replaceChildren();
-    state.tiers.forEach((tier,i)=>{const button=document.createElement('button');button.type='button';button.className='tier-btn';button.style.background=tier.color;button.textContent=tier.name;button.addEventListener('click',()=>rank(i));tierButtons.append(button)});
+    state.tiers.forEach((tier,i)=>{const button=document.createElement('button');button.type='button';button.className='tier-btn';button.style.background=tier.color;button.title=tier.name;const label=document.createElement('span');label.className='tier-btn-label';label.textContent=tier.name;button.append(label);button.addEventListener('click',()=>rank(i));tierButtons.append(button)});
 
     const queue=$('#queue'); queue.replaceChildren();
     if(!state.remaining.length){const empty=document.createElement('div');empty.className='queue-empty';empty.textContent=total?'All items ranked.':'No items loaded.';queue.append(empty)}
@@ -58,10 +73,8 @@ function render(){
     // Grow the LEFT tier-label column when a renamed tier has a longer title.
     // The compact vote buttons on the right intentionally remain unchanged.
     const longestTierName = state.tiers.reduce((max,tier)=>Math.max(max,String(tier.name||'').length),1);
-    const tierLabelWidth = Math.min(230, Math.max(92, 34 + longestTierName * 10));
-    const tierLabelFont = Math.max(12, Math.min(21, 25 - longestTierName * 0.42));
+    const tierLabelWidth = Math.min(155, Math.max(92, 70 + longestTierName * 4.2));
     board.style.setProperty('--tier-label-width', `${tierLabelWidth}px`);
-    board.style.setProperty('--tier-label-font', `${tierLabelFont}px`);
     state.tiers.forEach((tier,tierIndex)=>{
       const row=document.createElement('div'); row.className='board-row'; row.dataset.tier=String(tierIndex);
       const label=document.createElement('div'); label.className='board-label'; label.style.background=tier.color; label.textContent=tier.name;
@@ -79,7 +92,7 @@ function render(){
         cell.addEventListener('dragend',()=>{draggedRankedId=null;cell.classList.remove('dragging');document.querySelectorAll('.board-row.drag-over').forEach(el=>el.classList.remove('drag-over'))});
         items.append(cell);
       });
-      row.append(label,items); board.append(row);
+      row.append(label,items); board.append(row); fitBoardLabel(label);
     });
   }
 
