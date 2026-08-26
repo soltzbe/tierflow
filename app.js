@@ -49,6 +49,11 @@
     else state.remaining.forEach((item,i)=>{const cell=document.createElement('div');cell.className=`queue-thumb${i===0?' current':''}`;cell.title=item.name;const img=document.createElement('img');img.src=item.src;img.alt=item.name;img.loading=i<10?'eager':'lazy';cell.append(img);queue.append(cell)});
 
     const board=$('#board'); board.replaceChildren();
+    // Grow the LEFT tier-label column when a renamed tier has a longer title.
+    // The compact vote buttons on the right intentionally remain unchanged.
+    const longestTierName = state.tiers.reduce((max,tier)=>Math.max(max,String(tier.name||'').length),1);
+    const tierLabelWidth = Math.min(260, Math.max(92, 34 + longestTierName * 12));
+    board.style.setProperty('--tier-label-width', `${tierLabelWidth}px`);
     state.tiers.forEach((tier,tierIndex)=>{
       const row=document.createElement('div'); row.className='board-row'; row.dataset.tier=String(tierIndex);
       const label=document.createElement('div'); label.className='board-label'; label.style.background=tier.color; label.textContent=tier.name;
