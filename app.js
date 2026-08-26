@@ -31,7 +31,13 @@
     render();
   }
 
-  function render(){
+  function fitVoteButtonText(button, text){
+  if(!button) return;
+  button.textContent = text;
+  button.title = text;
+}
+
+function render(){
     const done=state.ranked.length, total=done+state.remaining.length;
     const selectedEntry=selectedRankedId?state.ranked.find(entry=>entry.item.id===selectedRankedId):null;
     const current=selectedEntry?.item||state.remaining[0];
@@ -52,8 +58,10 @@
     // Grow the LEFT tier-label column when a renamed tier has a longer title.
     // The compact vote buttons on the right intentionally remain unchanged.
     const longestTierName = state.tiers.reduce((max,tier)=>Math.max(max,String(tier.name||'').length),1);
-    const tierLabelWidth = Math.min(260, Math.max(92, 34 + longestTierName * 12));
+    const tierLabelWidth = Math.min(230, Math.max(92, 34 + longestTierName * 10));
+    const tierLabelFont = Math.max(12, Math.min(21, 25 - longestTierName * 0.42));
     board.style.setProperty('--tier-label-width', `${tierLabelWidth}px`);
+    board.style.setProperty('--tier-label-font', `${tierLabelFont}px`);
     state.tiers.forEach((tier,tierIndex)=>{
       const row=document.createElement('div'); row.className='board-row'; row.dataset.tier=String(tierIndex);
       const label=document.createElement('div'); label.className='board-label'; label.style.background=tier.color; label.textContent=tier.name;
