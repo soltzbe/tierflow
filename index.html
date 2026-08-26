@@ -5,19 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="A focused, ad-free tier list ranking interface.">
   <title>TierFlow</title>
-  <link rel="stylesheet" href="styles.css?v=live-layout-2">
+  <link rel="stylesheet" href="styles.css?v=live-layout-3">
 </head>
 <body>
   <main class="shell">
     <header class="topbar">
       <div class="brand-wrap">
-        <div class="brand-mark" aria-hidden="true">
-          <span></span><span></span><span></span>
-          <span></span><span></span><span></span>
-        </div>
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
         <div class="brand">TIER<span>FLOW</span></div>
       </div>
-
       <form class="import-form" id="importForm">
         <label class="sr-only" for="url">TierMaker template URL</label>
         <input id="url" autocomplete="url" inputmode="url" placeholder="Paste tiermaker.com/create/... link" required>
@@ -25,9 +21,7 @@
       </form>
     </header>
 
-    <p id="status" class="status" role="status" aria-live="polite">
-      Paste a public TierMaker template link to begin.
-    </p>
+    <p id="status" class="status" role="status" aria-live="polite">Paste a public TierMaker template link to begin.</p>
 
     <section class="workspace" id="workspace" hidden>
       <div class="heading">
@@ -50,48 +44,31 @@
         <aside class="vote-panel" aria-labelledby="voteHeading">
           <div class="vote-panel-inner">
             <h2 id="voteHeading">SUBMIT VOTE</h2>
-
-            <div class="imagebox">
-              <img id="currentImg" alt="Current item">
-            </div>
-
+            <div class="imagebox"><img id="currentImg" alt="Current item"></div>
             <div class="item-meta">
               <strong id="currentHeading">Current item</strong>
               <span id="itemIndex" class="muted"></span>
             </div>
-
-            <div class="tier-grid" id="tierButtons" aria-label="Choose a tier"></div>
-            <button class="skip-btn" id="skip" type="button">SKIP</button>
-
-            <div class="progress-block">
-              <div class="progress-line">
-                <span>Progress</span>
-                <span id="progress">0 / 0</span>
-              </div>
-              <div class="progress-track" aria-hidden="true">
-                <div class="progress-fill" id="progressFill"></div>
-              </div>
+            <div class="vote-actions">
+              <div class="tier-grid" id="tierButtons" aria-label="Choose a tier"></div>
+              <button class="skip-btn" id="skip" type="button">SKIP</button>
             </div>
-
-            <p class="help">
-              Keys <kbd>1</kbd>–<kbd>9</kbd> rank · <kbd>Z</kbd> undo · <kbd>S</kbd> skip
-            </p>
+            <div class="progress-block">
+              <div class="progress-line"><span>Progress</span><span id="progress">0 / 0</span></div>
+              <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            <p class="help">Click a ranked image to re-rank it, or drag it to another tier.</p>
           </div>
         </aside>
       </div>
 
-      <section class="queue-wrap" aria-label="Remaining items">
-        <div class="queue" id="queue"></div>
-      </section>
+      <section class="queue-wrap" aria-label="Remaining items"><div class="queue" id="queue"></div></section>
     </section>
   </main>
 
   <dialog id="tierDialog" class="dialog">
     <form method="dialog" class="dialog-card" id="tierEditorForm">
-      <div class="dialog-heading">
-        <h2>Edit tiers</h2>
-        <button class="icon-btn" value="cancel" aria-label="Close">×</button>
-      </div>
+      <div class="dialog-heading"><h2>Edit tiers</h2><button class="icon-btn" value="cancel" aria-label="Close">×</button></div>
       <div id="tierEditor"></div>
       <div class="controls dialog-actions">
         <button class="btn" id="addTier" type="button">+ Add tier</button>
@@ -100,7 +77,7 @@
     </form>
   </dialog>
 
-  <script src="config.js?v=live-layout-2"></script>
-  <script src="app.js?v=live-layout-2"></script>
+  <script src="config.js?v=live-layout-3"></script>
+  <script src="app.js?v=live-layout-3"></script>
 </body>
 </html>
